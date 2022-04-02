@@ -33,6 +33,8 @@ const VolumeImpls: { [v: number]: VolumeGenerator } = {};
 
 
 export default abstract class Volume {
+	public abstract startOffset(): number;
+
 	/**
 	 * Given a .tib file, this will open it and load basic information on it
 	 */
@@ -72,7 +74,7 @@ export default abstract class Volume {
 	
 		let magic = headerBlock.readUInt32LE(0);
 		if(magic !== VOLUME_MAGIC) {
-			throw new Error('Wrong magic!');
+			throw new Error('Wrong magic! 0x' + magic.toString(16) + ', expected 0x' + VOLUME_MAGIC.toString(16));
 		}
 	
 		// Should be 24 00 01 00 for Mac

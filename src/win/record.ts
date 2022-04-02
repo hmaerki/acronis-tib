@@ -7,16 +7,16 @@ import { Reader } from '../reader';
 const RECORD_INDEX_MAGIC = Buffer.from('0102001001000000', 'hex');
 
 export enum RecordType {
-	Config = 101, /**< Contains xml configuration data key-value pairs */
-	FirstFileMetaRecord = 102, /**< I don't know what this record contains but it is referenced by a single FileEntry and is followed by the rest fo the relevant  */
+	Config = 101 /*0x65*/, /**< Contains xml configuration data key-value pairs */
+	FirstFileMetaRecord = 102 /*0x66*/, /**< I don't know what this record contains but it is referenced by a single FileEntry and is followed by the rest fo the relevant  */
 	FileMetaA = 1, /**< Typically will follow the FirstFileMetaRecord */
 	FileMetaB = 2, /**< Typically will follow the FileMetaA */
 	FileMetaC = 5, /**< Typically will follow the FileMetaB */
-	Listing = 103, /**< Contains a list of all files/directories in the archive */
-	EndTrailer = 104, /**< Indicates the start of the end index that is referenced by the footer and holds a summary of where the important metadata blocks are located in the list (this means nothing else meaninful is left in the file. Generally we don't need to parse this if we are going forward as this should have been referenced already if we had loaded the footer of the file) */
-	RecordIndex = 108, /**< For regular files, this contains the index of where each record holding data for it is located */
-	Blob = 109, /**< Contains file data */
-	BlobSuffix = 110, /**< This is inserted after every single blob for a file has been written (usually empty but may contain metadata?) */
+	Listing = 103 /*0x67*/, /**< Contains a list of all files/directories in the archive */
+	EndTrailer = 104 /*0x68*/, /**< Indicates the start of the end index that is referenced by the footer and holds a summary of where the important metadata blocks are located in the list (this means nothing else meaninful is left in the file. Generally we don't need to parse this if we are going forward as this should have been referenced already if we had loaded the footer of the file) */
+	RecordIndex = 108 /*0x6C*/, /**< For regular files, this contains the index of where each record holding data for it is located */
+	Blob = 109, /*0x6D*/ /**< Contains file data */
+	BlobSuffix = 110, /*0x6E*/ /**< This is inserted after every single blob for a file has been written (usually empty but may contain metadata?) */
 }
 
 // Everything we have no serious parser for yet
@@ -152,7 +152,7 @@ export async function ReadRecord(reader: Reader): Promise<Record> {
 	}
 	else {
 		// NOTE: We currently don't know of any record types that aren't compressed 
-		throw new Error('Unknown item type');
+		throw new Error('Unknown item type: 0x' + type.toString(16));
 	}
 
 

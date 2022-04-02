@@ -8,11 +8,11 @@ const BUFFER_SIZE = 4096;
 
 
 
-function getInflaterErrorHandler(inflater: zlib.Inflate|zlib.InflateRaw): { promise: Promise<{}>; cleanup: () => void } {
+function getInflaterErrorHandler(inflater: zlib.Inflate|zlib.InflateRaw): { promise: Promise<string>; cleanup: () => void } {
 
 	let cleanup: (() => void)|undefined = undefined;
 
-	let p = new Promise((res, rej) => {
+	let p = new Promise<string>((res, rej) => {
 
 		function onError(err: Error) {
 			// TODO: Verify that this works
@@ -24,7 +24,7 @@ function getInflaterErrorHandler(inflater: zlib.Inflate|zlib.InflateRaw): { prom
 
 		// TODO: This is no longer applicable if we never call .end() on the stream?
 		function onEnd() {
-			res();
+			res('onEnd()');
 		}
 
 		inflater.on('end', onEnd);
@@ -106,7 +106,7 @@ export async function ReadCompressedStream(reader: Reader, length: number, raw =
 			
 					inflater.write(buffer);
 			
-					await new Promise((res) => {
+					await new Promise<void>((res) => {
 						inflater.flush(zlib.constants.Z_FULL_FLUSH, res);
 					});
 				
@@ -122,7 +122,7 @@ export async function ReadCompressedStream(reader: Reader, length: number, raw =
 
 	// Cleanup
 	cleanupErrorHandler();
-	await new Promise((res) => {
+	await new Promise<void>((res) => {
 		inflater.close(res);
 	});
 
